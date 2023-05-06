@@ -10,7 +10,7 @@
 
 ### About
 Really simple HTTP API proxy.
-Just configure a URL whitelist, some optional headers (e.g. CORS) and run.
+Just configure a URL whitelist, some optional headers (e.g. CORS), a port and run.
 
 ### Usage
 #### Set envs
@@ -33,6 +33,8 @@ CORS is defined by default:
 ```
 HEADERS={"cors": ["Access-Control-Allow-Origin", "*"]}
 ```
+##### Port
+Set the port your API will listen to. Default value is `5000`.
 
 #### Run
 Run with docker or install dependencies with `pip install -r requirements.txt` and then run with `python app.py`

@@ -14,6 +14,7 @@ limiter = Limiter(app, key_func=get_remote_address)
 
 WHITELIST = json.loads(environ.get("WHITELIST"))
 HEADERS = json.loads(environ.get("HEADERS"))
+PORT = int(environ.get("PORT"))
 ENCODING = "UTF-8"
 
 
@@ -63,7 +64,7 @@ def get():
 
 
 def main():
-    app.run(host="0.0.0.0", threaded=True, use_reloader=True)
+    app.run(host="0.0.0.0", port=PORT, threaded=True, use_reloader=True)
 
 
 if __name__ == "__main__":
