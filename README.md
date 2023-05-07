@@ -1,7 +1,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/bcattaneo/komet">
-    <img src="logo.jpg" alt="Logo" width="100" height="100">
+    <img src="logo.gif" alt="Logo" width="127" height="70">
   </a>
 <h3>Komet</h3>
   <i>Simple HTTP API proxy</i>
