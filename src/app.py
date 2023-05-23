@@ -26,16 +26,18 @@ def get_error(error, description, status_code):
     }, status_code
 
 
-def process(url: str, headers: "list[str]"):
+def process(url: str, res_headers: "list[str]", req_headers):
     if not reduce(lambda a, b: bool(re.match(b, url)) or a, WHITELIST, False):
         return get_error(
             "not_in_whitelist", "Provided url is not defined in current whitelist", 400
         )
 
-    url_response = requests.get(url, allow_redirects=True)
+    print(req_headers)
+
+    url_response = requests.get(url, allow_redirects=True, headers=req_headers)
     response = Response(url_response.content.decode(ENCODING), url_response.status_code)
 
-    for header in headers:
+    for header in res_headers:
         if header not in HEADERS:
             return get_error(
                 "not_in_headers",
@@ -53,14 +55,15 @@ def process(url: str, headers: "list[str]"):
 def get():
     args = request.args
     url: str = args.get("url")
-    headers: list[str] = (
+    req_headers = request.headers
+    res_headers: list[str] = (
         args.get("headers").split(",") if args.get("headers") != None else []
     )
 
     if url == None or url.isspace():
         return get_error("missing_parameter", "Missing url parameter", 400)
 
-    return process(url, headers)
+    return process(url, res_headers, req_headers)
 
 
 def main():
