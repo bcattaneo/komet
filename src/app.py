@@ -26,13 +26,26 @@ def get_error(error, description, status_code):
     }, status_code
 
 
-def process(url: str, res_headers: "list[str]", req_headers):
+def process(
+    url: str,
+    req_headers: dict,
+    res_headers: "list[str]",
+    hidden_headers: "list[str]",
+    fake_headers: dict,
+):
     if not reduce(lambda a, b: bool(re.match(b, url)) or a, WHITELIST, False):
         return get_error(
             "not_in_whitelist", "Provided url is not defined in current whitelist", 400
         )
 
-    print(req_headers)
+    # Remove skipped headers from original request
+    req_headers = {k: v for k, v in req_headers.items()}
+    list(
+        map(lambda hidden_header: req_headers.pop(hidden_header, None), hidden_headers)
+    )
+
+    # Add fake headers
+    req_headers.update(fake_headers)
 
     url_response = requests.get(url, allow_redirects=True, headers=req_headers)
     response = Response(url_response.content.decode(ENCODING), url_response.status_code)
@@ -59,11 +72,18 @@ def get():
     res_headers: list[str] = (
         args.get("headers").split(",") if args.get("headers") != None else []
     )
+    hidden_headers: list[str] = (
+        args.get("skip").split(",") if args.get("skip") != None else []
+    )
+
+    # TODO: remove possible url fake headers
+    fake_headers = dict(args)
+    list(map(lambda h: fake_headers.pop(h, None), ["headers", "skip", "url"]))
 
     if url == None or url.isspace():
         return get_error("missing_parameter", "Missing url parameter", 400)
 
-    return process(url, res_headers, req_headers)
+    return process(url, req_headers, res_headers, hidden_headers, fake_headers)
 
 
 def main():
